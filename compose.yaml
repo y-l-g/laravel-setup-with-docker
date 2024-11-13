@@ -15,7 +15,7 @@ services:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
   ##################################################
-  # PMA
+  # PHPMYADMIN
   ##################################################
   phpmyadmin:
     image: phpmyadmin:latest
@@ -24,7 +24,7 @@ services:
       PMA_USER: user
       PMA_PASSWORD: password
   ##################################################
-  # APP (FRANKENPHP)
+  # OCTANE:FRANKENPHP
   ##################################################
   app:
     build:
