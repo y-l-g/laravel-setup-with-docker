@@ -12,7 +12,6 @@ If you plan to use Reverb, Horizon, Octane, you might want to install them in yo
 
 ```
 php artisan install:broadcasting
-php artisan reverb:install
 ```
 
 ```
@@ -27,7 +26,7 @@ php artisan octane:install
 
 The `--ignore-platform-reqs` is important if you're on Windows because horizon can't run on windows.
 
-If you have trouble with `cors (Cross-Origin Request Blocked)` with inertia, add `$middleware->trustProxies(at: '*')` in `/bootstrap/app`;
+If you have trouble with `cors(Cross-Origin Request Blocked)` with inertia and https in local development, add `$middleware->trustProxies(at: '*')` in `/bootstrap/app`;
 
 ## To Do
 
