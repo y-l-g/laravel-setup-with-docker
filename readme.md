@@ -12,9 +12,10 @@ The app may be accessible at app.localhost
 
 - [ ] Make one setup for developement
   - [ ] Add support for Telescop
-  - [ ] Make bind mounts and watchers
+  - [ ] Bind mounts and watchers (watch code changes in developpement)
 - [ ] And one for production
   - [ ] Add security by adding a user and set permissions
   - [ ] Make a complete setup to hold multiples laravelapplications
   - [ ] Add support for optimizing, cache, and migrations
   - [ ] Add support for automated backups
+- [ ] Add support for mails
