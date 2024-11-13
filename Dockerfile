@@ -88,7 +88,7 @@ RUN chmod 0644 /etc/cron.d/schedule
 # CADDY-REVERSE-PROXY
 #####################################################
 
-FROM caddy:2.8 as caddy-reverse-proxy
+FROM caddy:2.8 AS caddy-reverse-proxy
 
 COPY --link ./Caddyfile /etc/caddy/Caddyfile
 
