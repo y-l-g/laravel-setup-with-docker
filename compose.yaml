@@ -1,0 +1,153 @@
+services:
+  ##################################################
+  # DB (MySQL)
+  ##################################################
+  db:
+    image: "mysql:8.0"
+    restart: always
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_USER: user
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  ##################################################
+  # PMA
+  ##################################################
+  phpmyadmin:
+    image: phpmyadmin:latest
+    environment:
+      PMA_HOST: db
+      PMA_USER: user
+      PMA_PASSWORD: password
+  ##################################################
+  # APP (FRANKENPHP)
+  ##################################################
+  app:
+    build:
+      target: common
+    restart: always
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    entrypoint: ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0"]
+    healthcheck:
+      test: ["CMD", "php", "artisan", "octane:status"]
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+  ##################################################
+  # REDIS
+  ##################################################
+  redis:
+    image: "redis:7.4"
+    restart: always
+    volumes:
+      - "redis-data:/data"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    depends_on:
+      app:
+        condition: service_healthy
+        restart: true
+  ##################################################
+  # HORIZON
+  ##################################################
+  horizon:
+    build:
+      target: common
+    restart: always
+    volumes:
+      - horizon_data:/data
+      - horizon_config:/config
+    command: ["php", "artisan", "horizon"]
+    healthcheck:
+      test: ["CMD", "php", "artisan", "horizon:status"]
+    depends_on:
+      redis:
+        condition: service_healthy
+        restart: true
+  ##################################################
+  # REVERB
+  ##################################################
+  reverb:
+    build:
+      target: common
+    restart: always
+    volumes:
+      - reverb_data:/data
+      - reverb_config:/config
+    command: ["php", "artisan", "reverb:start", "--debug"]
+    # expose:
+    #   - "8080"
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "reverb:start"]
+      start_period: 10s
+    depends_on:
+      horizon:
+        condition: service_healthy
+        restart: true
+  ##################################################
+  # CRON
+  ##################################################
+  cron:
+    build:
+      target: cron
+    restart: always
+    volumes:
+      - cron_data:/data
+      - cron_config:/config
+    command: ["cron", "-f"]
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "cron"]
+    depends_on:
+      reverb:
+        condition: service_healthy
+        restart: true
+  ##################################################
+  # PROXY
+  ##################################################
+  proxy:
+    build:
+      target: caddy-reverse-proxy
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - proxy_data:/data
+      - proxy_config:/config
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2019/metrics"]
+    depends_on:
+      cron:
+        condition: service_healthy
+        restart: true
+  ##################################################
+  # VOLUMES
+  ##################################################
+volumes:
+  caddy_data:
+  caddy_config:
+  ##################################################
+  proxy_data:
+  proxy_config:
+  ##################################################
+  horizon_data:
+  horizon_config:
+  ##################################################
+  reverb_data:
+  reverb_config:
+  ##################################################
+  mysql-data:
+  redis-data:
+  ##################################################
+  cron_data:
+  cron_config:
