@@ -27,15 +27,3 @@ php artisan octane:install
 The `--ignore-platform-reqs` is important if you're on Windows because horizon can't run on windows.
 
 If you have trouble with `cors(Cross-Origin Request Blocked)` with inertia and https in local development, add `$middleware->trustProxies(at: '*')` in `/bootstrap/app`;
-
-## To Do
-
-- [ ] Make one setup for developement
-  - [ ] Add support for Telescop
-  - [ ] Bind mounts and watchers (watch code changes in developpement)
-- [ ] And one for production
-  - [ ] Add security by adding a user and set permissions
-  - [ ] Make a complete setup to hold multiples laravelapplications
-  - [ ] Add support for optimizing, cache, and migrations
-  - [ ] Add support for automated backups
-- [ ] Add support for mails
